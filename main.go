@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gorilla/mux"
 	// "github.com/harshitasao/Microservices-go/handlers"
 )
 
@@ -22,10 +24,32 @@ func main() {
 	ph := handlers.NewProducts(l)
 
 	// creating new servemux
-	sm := http.NewServeMux()
+	// sm := http.NewServeMux()
+
+	//
+	sm := mux.NewRouter()
+	// This router has a sub-router using that we can have sub-router for each methods and
+	// this will provide us with more functionality with the middleware
+	// Using this making router specific to GET verb and then subrouter specific for handler
+
+	// Router for GET verb
+	getRouter := sm.Methods("GET").Subrouter()
+	getRouter.HandleFunc("/", ph.GetProducts)
+
+	// router for PUT verb
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+
+	// NOTE: when we have middleware then whenevr a request comes in first it goes to router then subrouter then it will see
+	// that this has a middleware so it first goes to middleware amd when it passes then goes to the subrouter
+
+	// router for Post verb
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ph.AddProducts)
+
 	//implementing handle method of servemux type object
 	// this method takes 2 parameters the path and the handler needs to be working for trhat path
-	sm.Handle("/", ph)
+	// sm.Handle("/", ph)
 
 	// creating a basic webserver
 	// and here instead of nil i am writing sm to make the default as my servemux not the defaultServerHttp
