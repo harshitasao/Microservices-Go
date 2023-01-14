@@ -119,7 +119,8 @@ func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 func (p *Products) AddProducts(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle POST Product")
 
-	data.AddProduct(prod)
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+	data.AddProduct(&prod)
 }
 
 func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
@@ -132,14 +133,16 @@ func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 
 	p.l.Println("Handle PUT Product", id)
 
-	prod := &data.Product{}
+	// prod := &data.Product{}
 
-	err = prod.FromJSON(r.Body)
-	if err != nil {
-		http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
-	}
+	// err = prod.FromJSON(r.Body)
+	// if err != nil {
+	// 	http.Error(rw, "Unable to unmarshal json", http.StatusBadRequest)
+	// }
 
-	err = data.UpdateProduct(id, prod)
+	prod := r.Context().Value(KeyProduct{}).(data.Product)
+
+	err = data.UpdateProduct(id, &prod)
 	if err == data.ErrProductNotFound {
 		http.Error(rw, "Product not found", http.StatusNotFound)
 		return
@@ -156,7 +159,7 @@ func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 
 type KeyProduct struct{}
 
-func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
+func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		prod := &data.Product{}
 
