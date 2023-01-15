@@ -39,6 +39,7 @@ func main() {
 	// router for PUT verb
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+	putRouter.Use(ph.MiddlewareProductValidation)
 
 	// NOTE: when we have middleware then whenevr a request comes in first it goes to router then subrouter then it will see
 	// that this has a middleware so it first goes to middleware amd when it passes then goes to the subrouter
@@ -46,6 +47,7 @@ func main() {
 	// router for Post verb
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", ph.AddProducts)
+	postRouter.Use(ph.MiddlewareProductValidation)
 
 	//implementing handle method of servemux type object
 	// this method takes 2 parameters the path and the handler needs to be working for trhat path

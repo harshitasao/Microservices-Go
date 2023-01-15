@@ -4,19 +4,49 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"time"
+
+	"github.com/go-playground/validator"
 )
 
 // Product defines the structure for an API product
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	SKU         string  `json:"sku"`
+	Price       float32 `json:"price" validate:"gt=0"`
+	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"-"`
+}
+
+// NOTE: validating the input is good for your security so that input is in your bound and if any mistakes are made easy to give error messages
+
+// NOTE: for the fields whose values are not easy to predict/available fo rthat we can add custom validator
+
+// Using go validator library for doing struct and field validation.
+// this uses tags for validating
+func (p *Product) Validate() error {
+	// creating a new validator
+	validate := validator.New()
+	// adding custom validator
+	validate.RegisterValidation("sku", validateSKU)
+
+	return validate.Struct(p)
+}
+
+// custom validator func
+func validateSKU(fl validator.FieldLevel) bool {
+	// my sku is in format abcd-efhg-abcg
+	// for putting sku in that format gonna be using regexp
+	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
+	matches := re.FindAllString(fl.Field().String(), -1)
+	if len(matches) != 1 {
+		return false
+	}
+	return true
 }
 
 func (p *Product) FromJSON(r io.Reader) error {
