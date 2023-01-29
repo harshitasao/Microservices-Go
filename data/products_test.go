@@ -1,23 +1,23 @@
 package data
 
-import (
-	"testing"
-)
+// import (
+// 	"testing"
+// )
 
-// very simple unit test for testing the validate func
+// // very simple unit test for testing the validate func
 
-func TestValidate(t *testing.T) {
-	// created the product
-	p := &Product{
-		Name:  "harshita",
-		Price: 1.00,
-		SKU:   "abc-efg-fhg",
-	}
+// func TestValidate(t *testing.T) {
+// 	// created the product
+// 	p := &Product{
+// 		Name:  "harshita",
+// 		Price: 1.00,
+// 		SKU:   "abc-efg-fhg",
+// 	}
 
-	// doing validation
-	err := p.Validate()
+// 	// doing validation
+// 	err := p.Validate()
 
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }

@@ -1,60 +1,45 @@
 package data
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"regexp"
-	"time"
-
-	"github.com/go-playground/validator"
 )
 
 // Product defines the structure for an API product
 type Product struct {
-	ID          int     `json:"id"`
-	Name        string  `json:"name" validate:"required"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price" validate:"gt=0"`
-	SKU         string  `json:"sku" validate:"required,sku"`
-	CreatedOn   string  `json:"-"`
-	UpdatedOn   string  `json:"-"`
-	DeletedOn   string  `json:"-"`
+	// the id for the product
+	//
+	// required: false
+	// min: 1
+	ID int `json:"id"` // Unique identifier for the product
+
+	// the name for this poduct
+	//
+	// required: true
+	// max length: 255
+	Name string `json:"name" validate:"required"`
+
+	// the description for this poduct
+	//
+	// required: false
+	// max length: 10000
+	Description string `json:"description"`
+
+	// the price for the product
+	//
+	// required: true
+	// min: 0.01
+	Price float32 `json:"price" validate:"required,gt=0"`
+
+	// the SKU for the product
+	//
+	// required: true
+	// pattern: [a-z]+-[a-z]+-[a-z]+
+	SKU string `json:"sku" validate:"sku"`
 }
 
-// NOTE: validating the input is good for your security so that input is in your bound and if any mistakes are made easy to give error messages
+var ErrProductNotFound = fmt.Errorf("Product not found")
 
-// NOTE: for the fields whose values are not easy to predict/available fo rthat we can add custom validator
-
-// Using go validator library for doing struct and field validation.
-// this uses tags for validating
-func (p *Product) Validate() error {
-	// creating a new validator
-	validate := validator.New()
-	// adding custom validator
-	validate.RegisterValidation("sku", validateSKU)
-
-	return validate.Struct(p)
-}
-
-// custom validator func
-func validateSKU(fl validator.FieldLevel) bool {
-	// my sku is in format abcd-efhg-abcg
-	// for putting sku in that format gonna be using regexp
-	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
-	matches := re.FindAllString(fl.Field().String(), -1)
-	if len(matches) != 1 {
-		return false
-	}
-	return true
-}
-
-func (p *Product) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(p)
-}
-
-// Products is a collection of Product
+// Products is a collection of Product or slice of product
 type Products []*Product
 
 // ToJSON serializes the contents of the collection to JSON
@@ -63,34 +48,58 @@ type Products []*Product
 // this reduces allocations and the overheads of the service
 //
 // https://golang.org/pkg/encoding/json/#NewEncoder
-func (p *Products) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
 
 // GetProducts returns a list of products
 func GetProducts() Products {
 	return productList
 }
 
+// GetProductByID is a func that returns the single product by id from the database
+// If a product is not found this function returns a ProductNotFound error
+func GetProductByID(id int) (*Product, error) {
+	i := findIndexByProductID(id)
+	if i == -1 {
+		return nil, ErrProductNotFound
+	}
+	return productList[i], nil
+}
+
+// Add new product to the database
 func AddProduct(p *Product) {
 	p.ID = getNextID()
 	productList = append(productList, p)
 }
 
-func UpdateProduct(id int, p *Product) error {
-	_, pos, err := findProduct(id)
-	if err != nil {
-		return err
+func UpdateProduct(p *Product) error {
+	i := findIndexByProductID(p.ID)
+	if i == -1 {
+		return ErrProductNotFound
 	}
-
-	p.ID = id
-	productList[pos] = p
+	// p.ID = id
+	productList[i] = p
 
 	return nil
 }
 
-var ErrProductNotFound = fmt.Errorf("Product not found")
+func DeleteProduct(id int) error {
+	i := findIndexByProductID(id)
+	if i == -1 {
+		return ErrProductNotFound
+	}
+	productList = append(productList[:i], productList[i+1])
+	return nil
+}
+
+// findIndex finds the index of a product in the database
+// returns -1 when no product can be found
+func findIndexByProductID(id int) int {
+	for i, p := range productList {
+		if p.ID == id {
+			return i
+		}
+	}
+	return -1
+}
 
 func findProduct(id int) (*Product, int, error) {
 	for i, p := range productList {
@@ -116,8 +125,6 @@ var productList = []*Product{
 		Description: "Frothy milky coffee",
 		Price:       2.45,
 		SKU:         "abc323",
-		CreatedOn:   time.Now().UTC().String(),
-		UpdatedOn:   time.Now().UTC().String(),
 	},
 	&Product{
 		ID:          2,
@@ -125,7 +132,5 @@ var productList = []*Product{
 		Description: "Short and strong coffee without milk",
 		Price:       1.99,
 		SKU:         "fjd34",
-		CreatedOn:   time.Now().UTC().String(),
-		UpdatedOn:   time.Now().UTC().String(),
 	},
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Microservice-Go/Microservices-Go/data"
 	"Microservice-Go/Microservices-Go/handlers"
 	"context"
 	"log"
@@ -19,14 +20,14 @@ func main() {
 
 	// here first defining where to give output and in which format
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
+	v := data.NewValidation()
 
-	// connecting the main with hello handler via this NewHello function
-	ph := handlers.NewProducts(l)
+	// connecting the main with Products handler via this NewProducts function
+	ph := handlers.NewProducts(l, v)
 
 	// creating new servemux
 	// sm := http.NewServeMux()
 
-	//
 	sm := mux.NewRouter()
 	// This router has a sub-router using that we can have sub-router for each methods and
 	// this will provide us with more functionality with the middleware
@@ -34,28 +35,33 @@ func main() {
 
 	// Router for GET verb
 	getRouter := sm.Methods("GET").Subrouter()
-	getRouter.HandleFunc("/", ph.GetProducts)
-
-	// router for PUT verb
-	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
-	putRouter.Use(ph.MiddlewareProductValidation)
+	getRouter.HandleFunc("/products", ph.ListAll)
+	getRouter.HandleFunc("/products/{id:[0-9]+}", ph.ListSingle)
 
 	// NOTE: when we have middleware then whenevr a request comes in first it goes to router then subrouter then it will see
 	// that this has a middleware so it first goes to middleware amd when it passes then goes to the subrouter
 
 	// router for Post verb
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", ph.AddProducts)
+	postRouter.HandleFunc("/products", ph.Create)
 	postRouter.Use(ph.MiddlewareProductValidation)
 
-	//implementing handle method of servemux type object
-	// this method takes 2 parameters the path and the handler needs to be working for trhat path
-	// sm.Handle("/", ph)
+	// router for PUT verb
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.Update)
+	putRouter.Use(ph.MiddlewareProductValidation)
 
-	// creating a basic webserver
-	// and here instead of nil i am writing sm to make the default as my servemux not the defaultServerHttp
-	// http.ListenAndServe(":9090", sm)
+	// router for delete verb
+	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/products/{id:[0-9]+}", ph.Delete)
+
+	// handler for documentation that will deal with the swagger specification
+	// opts := middleware.RedocOpts(SpecURL: "/swagger.yaml")
+	// sh := middleware.Redoc(opts, nil)
+
+	// getRouter.Handle("/docs", sh)
+	// // here fileServer is special handler serving files it will search for swagger.yaml specified in the request in the given Dir and serve it
+	// getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir(./)))
 
 	// creating new server manually becoz the default one doesnot provide with enough functionality
 
