@@ -1,9 +1,15 @@
 package handlers
 
 import (
-	"Microservice-Go/Microservices-Go/data"
 	"net/http"
+
+	"github.com/harshitasao/Microservices-Go/data"
 )
+
+// swagger:route GET /products products ListProducts
+// Returns a list of products
+// responses:
+// 		200: productsResponse
 
 // ListAll func to get/return all the products
 func (p *Products) ListAll(rw http.ResponseWriter, r *http.Request) {

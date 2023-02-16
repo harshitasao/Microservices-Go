@@ -1,9 +1,15 @@
 package handlers
 
 import (
-	"Microservice-Go/Microservices-Go/data"
 	"net/http"
+
+	"github.com/harshitasao/Microservices-Go/data"
 )
+
+// swagger:route DELETE /products/{id} products deleteProducts
+// Returns a list of products
+// responses:
+// 		201: noContent
 
 func (p *Products) Delete(rw http.ResponseWriter, r *http.Request) {
 	id := getProductID(r)

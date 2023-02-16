@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"Microservice-Go/Microservices-Go/data"
 	"net/http"
+
+	"github.com/harshitasao/Microservices-Go/data"
 )
 
 // this is add new product to the productList

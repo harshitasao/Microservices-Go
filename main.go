@@ -1,8 +1,6 @@
 package main
 
 import (
-	"Microservice-Go/Microservices-Go/data"
-	"Microservice-Go/Microservices-Go/handlers"
 	"context"
 	"log"
 	"net/http"
@@ -10,8 +8,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/harshitasao/Microservices-Go/data"
+	"github.com/harshitasao/Microservices-Go/handlers"
+
 	"github.com/gorilla/mux"
-	// "github.com/harshitasao/Microservices-go/handlers"
 )
 
 func main() {
@@ -55,13 +56,15 @@ func main() {
 	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
 	deleteRouter.HandleFunc("/products/{id:[0-9]+}", ph.Delete)
 
-	// handler for documentation that will deal with the swagger specification
-	// opts := middleware.RedocOpts(SpecURL: "/swagger.yaml")
-	// sh := middleware.Redoc(opts, nil)
+	// NOTE: redoc has handler for serving the swagger spec directly from the go-code
 
-	// getRouter.Handle("/docs", sh)
+	// handler for documentation that will deal with the swagger specification
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	sh := middleware.Redoc(opts, nil)
+
+	getRouter.Handle("/docs", sh)
 	// // here fileServer is special handler serving files it will search for swagger.yaml specified in the request in the given Dir and serve it
-	// getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir(./)))
+	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	// creating new server manually becoz the default one doesnot provide with enough functionality
 

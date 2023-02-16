@@ -1,4 +1,4 @@
-module Microservice-Go/Microservices-Go
+module github.com/harshitasao/Microservices-Go
 
 go 1.19
 

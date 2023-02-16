@@ -22,14 +22,38 @@
 package handlers
 
 import (
-	"Microservice-Go/Microservices-Go/data"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/harshitasao/Microservices-Go/data"
+
 	"github.com/gorilla/mux"
 )
+
+// struct for the documentation
+// list of products return in response
+// swagger: response productsResponse
+type productsResponse struct {
+	// All products in the system
+	// in: body
+	Body []data.Product
+}
+
+// swagger: response noContent
+type productNoContent struct {
+}
+
+// here we are defining in docs that this parameter is required for delete
+// this relates to the func called deleteProduct
+// swagger: parameters deleteProduct
+type productIDParameterWrapper struct {
+	// id of the product to delete from the database
+	// in: path
+	// required: true
+	ID int `json:"id"`
+}
 
 // keyProduct is the key of the product object
 type KeyProduct struct{}

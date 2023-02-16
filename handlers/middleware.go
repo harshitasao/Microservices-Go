@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"Microservice-Go/Microservices-Go/data"
 	"context"
 	"net/http"
+
+	"github.com/harshitasao/Microservices-Go/data"
 )
 
 // adding middleware means it is a httphandler and it allows to run chain of handlers for the request/response
