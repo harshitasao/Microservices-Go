@@ -10,6 +10,8 @@ import (
 // Returns a list of products
 // responses:
 // 		201: noContent
+//  404: errorResponse
+//  501: errorResponse
 
 func (p *Products) Delete(rw http.ResponseWriter, r *http.Request) {
 	id := getProductID(r)

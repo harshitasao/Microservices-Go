@@ -6,6 +6,14 @@ import (
 	"github.com/harshitasao/Microservices-Go/data"
 )
 
+// swagger:route PUT /products products updateProduct
+// Update a products details
+//
+// responses:
+//	201: noContentResponse
+//  404: errorResponse
+//  422: errorValidation
+
 func (p *Products) Update(rw http.ResponseWriter, r *http.Request) {
 	// fetch data/product from the context
 	prod := r.Context().Value(KeyProduct{}).(data.Product)
