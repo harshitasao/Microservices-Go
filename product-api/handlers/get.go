@@ -6,7 +6,7 @@ import (
 	"github.com/harshitasao/Microservices-Go/product-api/data"
 )
 
-// swagger:route GET /products products ListProducts
+// swagger:route GET /products products listProducts
 // Returns a list of products
 // responses:
 // 		200: productsResponse
@@ -24,11 +24,11 @@ func (p *Products) ListAll(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:route GET /products/{id} products listSingle
+// swagger:route GET /products/{id} products listSingleProduct
 // Return a list of products from the database
 // responses:
-//	200: productResponse
-//	404: errorResponse
+// 		200: productResponse
+// 		404: errorResponse
 
 // ListSingle handles GET requests for that user needs to provide ID
 func (p *Products) ListSingle(rw http.ResponseWriter, r *http.Request) {

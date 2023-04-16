@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/harshitasao/Microservices-Go/data"
-	"github.com/harshitasao/Microservices-Go/handlers"
+	"github.com/harshitasao/Microservices-Go/product-api/data"
+	"github.com/harshitasao/Microservices-Go/product-api/handlers"
 
 	"github.com/gorilla/mux"
 )
