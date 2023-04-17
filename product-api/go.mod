@@ -1,4 +1,4 @@
-module github.com/harshitasao/Microservices-Go
+module github.com/harshitasao/Microservices-Go/product-api
 
 go 1.19
 

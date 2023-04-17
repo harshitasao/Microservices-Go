@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+var ErrProductNotFound = fmt.Errorf("Product not found")
+
 // Product defines the structure for an API product
 // swagger: model
 type Product struct {
@@ -38,8 +40,6 @@ type Product struct {
 	SKU string `json:"sku" validate:"sku"`
 }
 
-var ErrProductNotFound = fmt.Errorf("Product not found")
-
 // Products is a collection of Product or slice of product
 type Products []*Product
 
@@ -66,18 +66,18 @@ func GetProductByID(id int) (*Product, error) {
 }
 
 // Add new product to the database
-func AddProduct(p *Product) {
+func AddProduct(p Product) {
 	p.ID = getNextID()
-	productList = append(productList, p)
+	productList = append(productList, &p)
 }
 
-func UpdateProduct(p *Product) error {
+func UpdateProduct(p Product) error {
 	i := findIndexByProductID(p.ID)
 	if i == -1 {
 		return ErrProductNotFound
 	}
 	// p.ID = id
-	productList[i] = p
+	productList[i] = &p
 
 	return nil
 }
@@ -102,15 +102,15 @@ func findIndexByProductID(id int) int {
 	return -1
 }
 
-func findProduct(id int) (*Product, int, error) {
-	for i, p := range productList {
-		if p.ID == id {
-			return p, i, nil
-		}
-	}
+// func findProduct(id int) (*Product, int, error) {
+// 	for i, p := range productList {
+// 		if p.ID == id {
+// 			return p, i, nil
+// 		}
+// 	}
 
-	return nil, -1, ErrProductNotFound
-}
+// 	return nil, -1, ErrProductNotFound
+// }
 
 func getNextID() int {
 	lp := productList[len(productList)-1]

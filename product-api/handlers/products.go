@@ -1,19 +1,3 @@
-// Package classification of Product API
-// Documentation of Product API
-
-//  Schemes: http
-//  BasePath: /
-//  Version: v1
-
-// 	Consumes:
-// 	- application/json
-
-// 	Produces:
-// 	- application/json
-
-// this gives go-swagger a chance to generate the docs
-// swagger:meta
-
 // swagger spec is used to generate co-gen in other language as well
 // this API only deals with JSON
 
@@ -32,28 +16,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// struct for the documentation
-// list of products return in response
-// swagger: response productsResponse
-type productsResponse struct {
-	// All products in the system
-	// in: body
-	Body []data.Product
-}
+// // struct for the documentation
+// // list of products return in response
+// // swagger: response productsResponse
+// type productsResponse struct {
+// 	// All products in the system
+// 	// in: body
+// 	Body []data.Product
+// }
 
-// swagger: response noContent
-type productNoContent struct {
-}
+// // swagger: response noContent
+// type productNoContent struct {
+// }
 
-// here we are defining in docs that this parameter is required for delete
-// this relates to the func called deleteProduct
-// swagger: parameters deleteProduct
-type productIDParameterWrapper struct {
-	// id of the product to delete from the database
-	// in: path
-	// required: true
-	ID int `json:"id"`
-}
+// // here we are defining in docs that this parameter is required for delete
+// // this relates to the func called deleteProduct
+// // swagger: parameters deleteProduct
+// type productIDParameterWrapper struct {
+// 	// id of the product to delete from the database
+// 	// in: path
+// 	// required: true
+// 	ID int `json:"id"`
+// }
 
 // keyProduct is the key of the product object
 type KeyProduct struct{}
