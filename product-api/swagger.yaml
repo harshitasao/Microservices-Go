@@ -116,9 +116,17 @@ paths:
         delete:
             description: Returns a list of products
             operationId: deleteProducts
+            parameters:
+                - description: The id of the product for which the operation relates
+                  format: int64
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+                  x-go-name: ID
             responses:
                 "201":
-                    $ref: '#/responses/noContent'
+                    $ref: '#/responses/noContentResponse'
                 "404":
                     $ref: '#/responses/errorResponse'
                 "501":
