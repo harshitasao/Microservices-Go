@@ -14,7 +14,7 @@ import (
 // ListAll func to get/return all the products
 func (p *Products) ListAll(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("[DEBUG] get all records")
-
+	rw.Header().Add("Content-Type", "application/json")
 	prod := data.GetProducts()
 
 	err := data.ToJSON(prod, rw)
