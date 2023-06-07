@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-openapi/runtime/middleware"
+	gohandlers "github.com/gorilla/handlers"
 	"github.com/harshitasao/Microservices-Go/product-api/data"
 	"github.com/harshitasao/Microservices-Go/product-api/handlers"
 
@@ -66,12 +67,14 @@ func main() {
 	// // here fileServer is special handler serving files it will search for swagger.yaml specified in the request in the given Dir and serve it
 	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
+	// CORS
+	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"http://localhost:3000"}))
 	// creating new server manually becoz the default one doesnot provide with enough functionality
 
 	// create a new server
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address
-		Handler:      sm,                // set the default handler
+		Handler:      ch(sm),            // set the default handler  and also wrapping all the handlers with CORS
 		ErrorLog:     l,                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
 		WriteTimeout: 10 * time.Second,  // max time to write response to the client
